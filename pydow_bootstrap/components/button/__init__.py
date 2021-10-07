@@ -1,10 +1,15 @@
 from pydow import Component
 
+from blinker import signal
+
 
 class BootstrapButton(Component):
 
     def __init__(self, *args, **kwargs):
         super(BootstrapButton, self).__init__(template_location=__file__, *args, **kwargs)
+
+        # Specific signals for this button
+        self.signal_on_click = signal(f"ON_CLICK_{self.identifier}")
 
         size = kwargs.get("size", "")
         if size == "small":
@@ -22,4 +27,4 @@ class BootstrapButton(Component):
         if hasattr(self, "onClick"):
             on_click_method = self.onClick
             if on_click_method is not None:
-                self.dispatcher.addEventListener(f"ON_CLICK_{self.identifier}", on_click_method)
+                self.signal_on_click.connect(on_click_method, weak=False)
